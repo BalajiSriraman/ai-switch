@@ -17,5 +17,4 @@ export default defineNuxtConfig({
     faunaEndpoint: process.env.NUXT_FAUNA_ENDPOINT,
   },
 
-  modules: ["@nuxthub/core"],
 });

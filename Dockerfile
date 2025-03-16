@@ -4,6 +4,7 @@ FROM node:20.14.0-slim AS build
 # Enable pnpm
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
+RUN npm i corepack -g
 RUN corepack enable
 
 # Set the working directory inside the container
@@ -14,7 +15,7 @@ COPY ./package.json /app/
 COPY ./pnpm-lock.yaml /app/
 
 ## Install dependencies
-RUN pnpm install --shamefully-hoist
+RUN pnpm install 
 
 # Copy the rest of the application files to the working directory
 COPY . ./
