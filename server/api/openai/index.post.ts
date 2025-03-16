@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
   if (!validatedBody.success) {
     console.error({
       error: validatedBody.error,
-      file: "google/index.post.ts",
+      file: "openai/index.post.ts",
     });
 
     throw createError({
@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
   const apiKeys = getRuntimeKeys(useRuntimeConfig().googleApiKey);
 
   const response = await trySwitcherWithKeys(
-    _googleGeminiClient,
+    _openaiClient,
     validatedBody.data,
     apiKeys.keys
   );

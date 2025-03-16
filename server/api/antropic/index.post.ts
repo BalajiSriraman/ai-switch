@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
   if (!validatedBody.success) {
     console.error({
       error: validatedBody.error,
-      file: "google/index.post.ts",
+      file: "anthropic/index.post.ts",
     });
 
     throw createError({
@@ -15,10 +15,10 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const apiKeys = getRuntimeKeys(useRuntimeConfig().googleApiKey);
+  const apiKeys = getRuntimeKeys(useRuntimeConfig().anthropicToken);
 
   const response = await trySwitcherWithKeys(
-    _googleGeminiClient,
+    _anthropicClient,
     validatedBody.data,
     apiKeys.keys
   );
