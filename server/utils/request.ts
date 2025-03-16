@@ -34,7 +34,7 @@ export const switcher = async (
 
     const zodSchema = eval(jsonSchemaToZod(schema));
 
-    const { object } = await generateObject({
+    const object = await generateObject({
       model: options._model,
       schema: zodSchema,
       prompt: prompt,
@@ -72,7 +72,6 @@ export const trySwitcherWithKeys = async (
 
   for (const [index, key] of apiKeys.entries()) {
     try {
-      console.log("key", key);
       const modelClient = _modelClient(key)(validatedData.model);
       const response = await switcher(validatedData, {
         _model: modelClient,
