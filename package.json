@@ -18,6 +18,7 @@
     "@ai-sdk/openai": "^1.2.5",
     "@ai-sdk/perplexity": "^1.0.7",
     "ai": "^4.1.61",
+    "json-schema-to-zod": "^2.6.0",
     "nuxt": "^3.16.0",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0",

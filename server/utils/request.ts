@@ -3,17 +3,26 @@ import { bodyParams, BodyParams } from "../models/request";
 import { generateObject, LanguageModelV1 } from "ai";
 import { generateText } from "ai";
 import { magicJsonParser } from ".";
+import jsonSchemaToZod from "json-schema-to-zod";
+import { ModelClientWithoutEnv } from "./ai";
 
 export const bodyValidator = async (event: H3Event) => {
   const body = await readBody(event);
   const parsedBody = magicJsonParser(body);
-  console.log(parsedBody);
   return bodyParams.safeParse(parsedBody);
 };
 
-/**
- * @description A function that takes a query and options and returns a response
- */
+export const getRuntimeKeys = (keys: string) => {
+  const runtimeKeys = keys
+    .replace(/[\[\]"]/g, "") // Remove brackets and quotes
+    .split(","); // Split by comma
+
+  return {
+    length: runtimeKeys.length,
+    keys: runtimeKeys,
+  };
+};
+
 export const switcher = async (
   body: BodyParams,
   options: { _model: LanguageModelV1 }
@@ -23,9 +32,11 @@ export const switcher = async (
   if (responseSchema.type === "object") {
     const { schema } = responseSchema;
 
+    const zodSchema = eval(jsonSchemaToZod(schema));
+
     const { object } = await generateObject({
       model: options._model,
-      schema: schema,
+      schema: zodSchema,
       prompt: prompt,
       retry: retry,
       maxRetries: retry,
@@ -43,4 +54,38 @@ export const switcher = async (
 
     return text;
   }
+};
+
+/**
+ * Attempts to execute the switcher function with multiple API keys.
+ * @param validatedData - The validated body data.
+ * @param apiKeys - An array of API keys.
+ * @returns The response from the switcher call.
+ * @throws If all attempts fail.
+ */
+export const trySwitcherWithKeys = async (
+  _modelClient: ModelClientWithoutEnv,
+  validatedData: BodyParams,
+  apiKeys: string[]
+) => {
+  let lastError: unknown;
+
+  for (const [index, key] of apiKeys.entries()) {
+    try {
+      const modelClient = _modelClient(key)(validatedData.model);
+      const response = await switcher(validatedData, {
+        _model: modelClient,
+      });
+      return response;
+    } catch (error) {
+      console.error(`Failed with API key #${index + 1}`, error);
+      lastError = error;
+    }
+  }
+  console.error("All API keys failed.");
+  throw createError({
+    statusCode: 500,
+    statusMessage: "All API keys failed",
+    cause: lastError,
+  });
 };
