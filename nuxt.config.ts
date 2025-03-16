@@ -2,6 +2,7 @@
 export default defineNuxtConfig({
   compatibilityDate: "2024-11-01",
   devtools: { enabled: true },
+
   runtimeConfig: {
     googleApiKey: process.env.NUXT_GOOGLE_API_KEY,
     openaiToken: process.env.NUXT_OPENAI_TOKEN,
@@ -12,4 +13,6 @@ export default defineNuxtConfig({
     deepseekToken: process.env.NUXT_DEEPSEEK_TOKEN,
     faunaSecret: process.env.NUXT_FAUNA_SECRET,
   },
+
+  modules: ["@nuxthub/core"],
 });

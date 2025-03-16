@@ -72,6 +72,7 @@ export const trySwitcherWithKeys = async (
 
   for (const [index, key] of apiKeys.entries()) {
     try {
+      console.log("key", key);
       const modelClient = _modelClient(key)(validatedData.model);
       const response = await switcher(validatedData, {
         _model: modelClient,
