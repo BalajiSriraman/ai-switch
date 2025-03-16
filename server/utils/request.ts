@@ -1,20 +1,24 @@
 import { H3Event } from "h3";
-import { QueryParams, queryParams } from "../models/request";
+import { bodyParams, BodyParams } from "../models/request";
 import { generateObject, LanguageModelV1 } from "ai";
 import { generateText } from "ai";
-import { ZodType, ZodTypeDef } from "zod";
-import { ModelClients, ModelProviders } from "./ai";
-export const queryValidator = (event: H3Event) =>
-  getValidatedQuery(event, queryParams.safeParse);
+import { magicJsonParser } from ".";
+
+export const bodyValidator = async (event: H3Event) => {
+  const body = await readBody(event);
+  const parsedBody = magicJsonParser(body);
+  console.log(parsedBody);
+  return bodyParams.safeParse(parsedBody);
+};
 
 /**
  * @description A function that takes a query and options and returns a response
  */
 export const switcher = async (
-  query: QueryParams,
+  body: BodyParams,
   options: { _model: LanguageModelV1 }
 ) => {
-  const { prompt, responseSchema, retry } = query;
+  const { prompt, responseSchema, retry } = body;
 
   if (responseSchema.type === "object") {
     const { schema } = responseSchema;

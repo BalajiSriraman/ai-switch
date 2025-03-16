@@ -1,10 +1,11 @@
 import { z } from "zod";
+import { magicJsonParser } from "../utils";
 
 const objectResponseSchema = z.object({
   type: z.literal("object"),
   // TODO: Only Zod is supported for now
   // z.ZodType<unknown, z.ZodTypeDef, any>
-  schema: z.unknown(),
+  schema: z.any().transform((val) => magicJsonParser(val)),
 });
 
 const textResponseSchema = z.object({
@@ -12,7 +13,7 @@ const textResponseSchema = z.object({
   text: z.string(),
 });
 
-export const queryParams = z.object({
+export const bodyParams = z.object({
   retry: z.number().optional().default(1),
   prompt: z.string(),
   model: z.string(),
@@ -22,4 +23,4 @@ export const queryParams = z.object({
   ]),
 });
 
-export type QueryParams = z.infer<typeof queryParams>;
+export type BodyParams = z.infer<typeof bodyParams>;

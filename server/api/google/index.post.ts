@@ -1,23 +1,23 @@
 export default defineEventHandler(async (event) => {
-  const validatedQuery = await queryValidator(event);
+  const validatedBody = await bodyValidator(event);
 
-  if (!validatedQuery.success) {
+  if (!validatedBody.success) {
     console.error({
-      error: validatedQuery.error,
+      error: validatedBody.error,
       file: "google/index.post.ts",
     });
 
     throw createError({
       statusCode: 400,
-      statusMessage: "Invalid query",
+      statusMessage: "Invalid body",
     });
   }
 
-  const { model } = validatedQuery.data;
+  const { model } = validatedBody.data;
 
   const modelClient = _googleGeminiClient(model);
 
-  const response = await switcher(validatedQuery.data, {
+  const response = await switcher(validatedBody.data, {
     _model: modelClient,
   });
 
